@@ -21,6 +21,7 @@ class PasscodeGenerator:
         self.include_random = tk.BooleanVar(value=True)
         self.include_common = tk.BooleanVar(value=True)
         self.include_combinations = tk.BooleanVar(value=True)
+        self.include_case_variations = tk.BooleanVar(value=True)
         self.num_random = tk.IntVar(value=100)
 
         # Expanded common passwords (200+ most common)
@@ -222,9 +223,20 @@ class PasscodeGenerator:
                               textvariable=self.max_length)
         max_spin.grid(row=1, column=1, padx=(10, 0), pady=(5, 0))
 
+        # Case variation settings
+        case_frame = ttk.LabelFrame(main_frame, text="Case Variations", padding="10")
+        case_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+
+        ttk.Checkbutton(case_frame, text="Generate ALL possible upper/lowercase combinations for words", 
+                       variable=self.include_case_variations).grid(row=0, column=0, columnspan=2, sticky=tk.W)
+
+        case_info = ttk.Label(case_frame, text="⚠️ WARNING: This will generate MASSIVE wordlists! For 'hello': HeLLo, hELLO, etc.", 
+                              font=("Arial", 8), foreground="red", wraplength=500)
+        case_info.grid(row=1, column=0, columnspan=2, sticky=tk.W, pady=(5, 0))
+
         # Common passwords
         common_frame = ttk.LabelFrame(main_frame, text="Common Passwords & Patterns", padding="10")
-        common_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        common_frame.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         ttk.Checkbutton(common_frame, text="Include 200+ most common passwords and patterns", 
                        variable=self.include_common).grid(row=0, column=0, columnspan=2, sticky=tk.W)
@@ -235,7 +247,7 @@ class PasscodeGenerator:
 
         # Smart combinations
         combo_frame = ttk.LabelFrame(main_frame, text="Smart Combinations", padding="10")
-        combo_frame.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        combo_frame.grid(row=4, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         ttk.Checkbutton(combo_frame, text="Create intelligent combinations of common passwords + your data", 
                        variable=self.include_combinations).grid(row=0, column=0, columnspan=2, sticky=tk.W)
@@ -246,7 +258,7 @@ class PasscodeGenerator:
 
         # Important dates
         dates_frame = ttk.LabelFrame(main_frame, text="Important Dates", padding="10")
-        dates_frame.grid(row=4, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        dates_frame.grid(row=5, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         ttk.Checkbutton(dates_frame, text="Include date-based passcodes", 
                        variable=self.include_dates).grid(row=0, column=0, columnspan=2, sticky=tk.W)
@@ -263,7 +275,7 @@ class PasscodeGenerator:
 
         # Important words
         words_frame = ttk.LabelFrame(main_frame, text="Important Words/Names", padding="10")
-        words_frame.grid(row=5, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        words_frame.grid(row=6, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         ttk.Checkbutton(words_frame, text="Include word-based passcodes", 
                        variable=self.include_words).grid(row=0, column=0, columnspan=2, sticky=tk.W)
@@ -280,7 +292,7 @@ class PasscodeGenerator:
 
         # Random passcodes
         random_frame = ttk.LabelFrame(main_frame, text="Random Passcodes", padding="10")
-        random_frame.grid(row=6, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        random_frame.grid(row=7, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         ttk.Checkbutton(random_frame, text="Include random alphanumeric passcodes", 
                        variable=self.include_random).grid(row=0, column=0, columnspan=2, sticky=tk.W)
@@ -292,26 +304,26 @@ class PasscodeGenerator:
 
         # File size warning
         warning_frame = ttk.LabelFrame(main_frame, text="File Size Management", padding="10")
-        warning_frame.grid(row=7, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        warning_frame.grid(row=8, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         warning_text = ttk.Label(warning_frame, 
                                 text="⚠️ Large wordlists will be automatically split into 1GB files\n" +
-                                     "With all options enabled, expect millions of passcodes!", 
-                                font=("Arial", 9), foreground="orange", wraplength=500)
+                                     "🚨 With case variations enabled, expect TENS OF MILLIONS of passcodes!", 
+                                font=("Arial", 9), foreground="red", wraplength=500)
         warning_text.grid(row=0, column=0, columnspan=2, sticky=tk.W)
 
         # Generate button
         generate_btn = ttk.Button(main_frame, text="Generate Passcodes", 
                                  command=self.generate_passcodes, style="Accent.TButton")
-        generate_btn.grid(row=8, column=0, columnspan=2, pady=20)
+        generate_btn.grid(row=9, column=0, columnspan=2, pady=20)
 
         # Progress bar
         self.progress = ttk.Progressbar(main_frame, mode='indeterminate')
-        self.progress.grid(row=9, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        self.progress.grid(row=10, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         # Status label
         self.status_label = ttk.Label(main_frame, text="Ready to generate passcodes")
-        self.status_label.grid(row=10, column=0, columnspan=2)
+        self.status_label.grid(row=11, column=0, columnspan=2)
 
         # Configure scrolling
         canvas.pack(side="left", fill="both", expand=True)
@@ -326,6 +338,37 @@ class PasscodeGenerator:
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         main_frame.columnconfigure(0, weight=1)
+
+    def generate_all_case_variations(self, word):
+        """Generate ALL possible upper/lowercase combinations for a word"""
+        if not word or not word.isalpha():
+            return [word]  # Return original if not all letters
+
+        # Limit to reasonable length to prevent memory explosion
+        if len(word) > 10:
+            # For very long words, just return basic variations
+            return [word, word.lower(), word.upper(), word.capitalize()]
+
+        variations = []
+        # Generate all 2^n combinations where n is the length of the word
+        for i in range(2 ** len(word)):
+            variation = ""
+            for j, char in enumerate(word):
+                if char.isalpha():
+                    # Check if bit j is set in i
+                    if (i >> j) & 1:
+                        variation += char.upper()
+                    else:
+                        variation += char.lower()
+                else:
+                    variation += char
+            variations.append(variation)
+
+        return list(set(variations))  # Remove duplicates
+
+    def generate_basic_case_variations(self, word):
+        """Generate basic case variations (original method)"""
+        return [word, word.lower(), word.upper(), word.capitalize()]
 
     def parse_dates(self, date_text):
         """Parse dates from text input and return various formats"""
@@ -378,8 +421,14 @@ class PasscodeGenerator:
             if not word:
                 continue
 
-            # Add the word itself in different cases
-            variations = [word, word.lower(), word.upper(), word.capitalize()]
+            # Generate case variations based on setting
+            if self.include_case_variations.get():
+                variations = self.generate_all_case_variations(word)
+                self.status_label.config(text=f"Generating case variations for '{word}': {len(variations)} combinations")
+                self.root.update()
+            else:
+                variations = self.generate_basic_case_variations(word)
+
             combinations.extend(variations)
 
             # Add word with common patterns
@@ -394,7 +443,7 @@ class PasscodeGenerator:
                         pattern + "_" + variation
                     ])
 
-            # Add word with special characters
+            # Add word with special characters (limit to prevent explosion)
             for char in self.special_chars[:10]:  # Use first 10 special chars
                 for variation in variations:
                     combinations.extend([
@@ -409,7 +458,11 @@ class PasscodeGenerator:
             # Add leetspeak variations
             leet_word = self.to_leetspeak(word)
             if leet_word != word:
-                combinations.extend([leet_word, leet_word.upper(), leet_word.lower()])
+                if self.include_case_variations.get():
+                    leet_variations = self.generate_all_case_variations(leet_word)
+                else:
+                    leet_variations = self.generate_basic_case_variations(leet_word)
+                combinations.extend(leet_variations)
 
         return combinations
 
@@ -439,16 +492,22 @@ class PasscodeGenerator:
                         combo = prefix + date + suffix
                         combinations.append(combo)
 
-            # Combine with common passwords
+            # Combine with common passwords (with case variations if enabled)
             for common in self.common_passwords[:50]:  # Use top 50 common passwords
-                combinations.extend([
-                    common + date,
-                    date + common,
-                    common + date + "!",
-                    date + common + "!",
-                    common + "_" + date,
-                    date + "_" + common
-                ])
+                if self.include_case_variations.get():
+                    common_variations = self.generate_all_case_variations(common)
+                else:
+                    common_variations = self.generate_basic_case_variations(common)
+
+                for common_var in common_variations:
+                    combinations.extend([
+                        common_var + date,
+                        date + common_var,
+                        common_var + date + "!",
+                        date + common_var + "!",
+                        common_var + "_" + date,
+                        date + "_" + common_var
+                    ])
 
             # Add reversed dates
             reversed_date = date[::-1]
@@ -488,46 +547,66 @@ class PasscodeGenerator:
         all_words = words + self.common_words
 
         # Combine common passwords with user words
-        for word in all_words[:100]:  # Limit to prevent explosion
-            word_variations = [word, word.lower(), word.upper(), word.capitalize()]
-            for common in self.common_passwords:
+        for word in all_words[:50]:  # Limit to prevent explosion
+            if self.include_case_variations.get():
+                word_variations = self.generate_all_case_variations(word)
+            else:
+                word_variations = self.generate_basic_case_variations(word)
+
+            for common in self.common_passwords[:30]:  # Limit common passwords too
+                if self.include_case_variations.get():
+                    common_variations = self.generate_all_case_variations(common)
+                else:
+                    common_variations = self.generate_basic_case_variations(common)
+
                 for word_var in word_variations:
-                    combinations.extend([
-                        common + word_var,
-                        word_var + common,
-                        common + word_var + "!",
-                        word_var + common + "!",
-                        common + word_var + "123",
-                        word_var + common + "123",
-                        common + "_" + word_var,
-                        word_var + "_" + common,
-                        common + "." + word_var,
-                        word_var + "." + common,
-                        common + word_var + "@",
-                        word_var + common + "@"
-                    ])
+                    for common_var in common_variations:
+                        combinations.extend([
+                            common_var + word_var,
+                            word_var + common_var,
+                            common_var + word_var + "!",
+                            word_var + common_var + "!",
+                            common_var + word_var + "123",
+                            word_var + common_var + "123",
+                            common_var + "_" + word_var,
+                            word_var + "_" + common_var,
+                            common_var + "." + word_var,
+                            word_var + "." + common_var,
+                            common_var + word_var + "@",
+                            word_var + common_var + "@"
+                        ])
 
         # Combine common passwords with user dates
         for date in dates:
-            for common in self.common_passwords:
-                combinations.extend([
-                    common + date,
-                    date + common,
-                    common + date + "!",
-                    date + common + "!",
-                    common + "_" + date,
-                    date + "_" + common,
-                    common + "." + date,
-                    date + "." + common,
-                    common + date + "@",
-                    date + common + "@",
-                    common + date + "#",
-                    date + common + "#"
-                ])
+            for common in self.common_passwords[:30]:
+                if self.include_case_variations.get():
+                    common_variations = self.generate_all_case_variations(common)
+                else:
+                    common_variations = self.generate_basic_case_variations(common)
+
+                for common_var in common_variations:
+                    combinations.extend([
+                        common_var + date,
+                        date + common_var,
+                        common_var + date + "!",
+                        date + common_var + "!",
+                        common_var + "_" + date,
+                        date + "_" + common_var,
+                        common_var + "." + date,
+                        date + "." + common_var,
+                        common_var + date + "@",
+                        date + common_var + "@",
+                        common_var + date + "#",
+                        date + common_var + "#"
+                    ])
 
         # Combine user words with user dates
         for word in words:
-            word_variations = [word, word.lower(), word.upper(), word.capitalize()]
+            if self.include_case_variations.get():
+                word_variations = self.generate_all_case_variations(word)
+            else:
+                word_variations = self.generate_basic_case_variations(word)
+
             for date in dates:
                 for word_var in word_variations:
                     combinations.extend([
@@ -543,30 +622,21 @@ class PasscodeGenerator:
                         date + "." + word_var
                     ])
 
-        # Triple combinations (common + word + date)
-        for word in words[:10]:  # Limit to prevent explosion
-            word_var = word.lower()
-            for date in dates[:10]:
-                for common in self.common_passwords[:20]:
-                    combinations.extend([
-                        common + word_var + date,
-                        word_var + common + date,
-                        date + common + word_var,
-                        common + date + word_var,
-                        word_var + date + common,
-                        date + word_var + common
-                    ])
-
         # Pattern combinations
-        for pattern in self.common_patterns[:50]:
-            for word in words[:20]:
-                word_var = word.lower()
-                combinations.extend([
-                    word_var + pattern,
-                    pattern + word_var,
-                    word_var + pattern + "!",
-                    pattern + word_var + "!"
-                ])
+        for pattern in self.common_patterns[:30]:
+            for word in words[:10]:
+                if self.include_case_variations.get():
+                    word_variations = self.generate_all_case_variations(word)
+                else:
+                    word_variations = self.generate_basic_case_variations(word)
+
+                for word_var in word_variations:
+                    combinations.extend([
+                        word_var + pattern,
+                        pattern + word_var,
+                        word_var + pattern + "!",
+                        pattern + word_var + "!"
+                    ])
 
         return combinations
 
@@ -574,50 +644,75 @@ class PasscodeGenerator:
         """Generate variations of common passwords"""
         combinations = []
 
-        # Add base common passwords
-        combinations.extend(self.common_passwords)
+        # Add base common passwords with case variations
+        for password in self.common_passwords:
+            if self.include_case_variations.get():
+                password_variations = self.generate_all_case_variations(password)
+            else:
+                password_variations = self.generate_basic_case_variations(password)
+            combinations.extend(password_variations)
 
         # Add common passwords with patterns
-        for password in self.common_passwords:
-            for pattern in self.common_patterns:
-                combinations.extend([
-                    password + pattern,
-                    pattern + password,
-                    password + pattern + "!",
-                    password + "!" + pattern,
-                    password + "_" + pattern,
-                    pattern + "_" + password,
-                    password + "." + pattern,
-                    pattern + "." + password
-                ])
+        for password in self.common_passwords[:50]:  # Limit to prevent explosion
+            if self.include_case_variations.get():
+                password_variations = self.generate_all_case_variations(password)
+            else:
+                password_variations = self.generate_basic_case_variations(password)
+
+            for pattern in self.common_patterns[:30]:
+                for password_var in password_variations:
+                    combinations.extend([
+                        password_var + pattern,
+                        pattern + password_var,
+                        password_var + pattern + "!",
+                        password_var + "!" + pattern,
+                        password_var + "_" + pattern,
+                        pattern + "_" + password_var,
+                        password_var + "." + pattern,
+                        pattern + "." + password_var
+                    ])
 
         # Add common passwords with special characters
-        for password in self.common_passwords[:50]:  # Limit to prevent explosion
-            for char in self.special_chars[:15]:
-                combinations.extend([
-                    password + char,
-                    char + password,
-                    password + char + char,
-                    char + password + char
-                ])
+        for password in self.common_passwords[:30]:  # Further limit
+            if self.include_case_variations.get():
+                password_variations = self.generate_all_case_variations(password)
+            else:
+                password_variations = self.generate_basic_case_variations(password)
+
+            for char in self.special_chars[:10]:
+                for password_var in password_variations:
+                    combinations.extend([
+                        password_var + char,
+                        char + password_var,
+                        password_var + char + char,
+                        char + password_var + char
+                    ])
 
         # Add common words with patterns
-        for word in self.common_words:
-            for pattern in self.common_patterns[:30]:
-                combinations.extend([
-                    word + pattern,
-                    pattern + word,
-                    word.capitalize() + pattern,
-                    word.upper() + pattern,
-                    pattern + word.capitalize(),
-                    pattern + word.upper()
-                ])
+        for word in self.common_words[:50]:  # Limit common words
+            if self.include_case_variations.get():
+                word_variations = self.generate_all_case_variations(word)
+            else:
+                word_variations = self.generate_basic_case_variations(word)
+
+            for pattern in self.common_patterns[:20]:
+                for word_var in word_variations:
+                    combinations.extend([
+                        word_var + pattern,
+                        pattern + word_var,
+                        word_var + pattern + "!",
+                        pattern + word_var + "!"
+                    ])
 
         # Add leetspeak versions
-        for password in self.common_passwords[:30]:
+        for password in self.common_passwords[:20]:
             leet_password = self.to_leetspeak(password)
             if leet_password != password:
-                combinations.extend([leet_password, leet_password.upper(), leet_password.lower()])
+                if self.include_case_variations.get():
+                    leet_variations = self.generate_all_case_variations(leet_password)
+                else:
+                    leet_variations = self.generate_basic_case_variations(leet_password)
+                combinations.extend(leet_variations)
 
         return combinations
 
@@ -647,7 +742,7 @@ class PasscodeGenerator:
 
         try:
             # Create first file
-            if len(passcodes) > 1:
+            if len(passcodes) > 1000000:  # If more than 1M passcodes, expect multiple files
                 filename = f"{base_filename}_part{file_count}.txt"
             else:
                 filename = f"{base_filename}.txt"
@@ -696,6 +791,18 @@ class PasscodeGenerator:
     def generate_passcodes(self):
         """Main function to generate all passcodes"""
         try:
+            # Warning for case variations
+            if self.include_case_variations.get():
+                result = messagebox.askyesno("Warning", 
+                    "⚠️ You have enabled ALL case variations!\n\n" +
+                    "This will generate MASSIVE wordlists that could be:\n" +
+                    "• Tens of millions of passcodes\n" +
+                    "• Multiple gigabytes in size\n" +
+                    "• Take a very long time to generate\n\n" +
+                    "Are you sure you want to continue?")
+                if not result:
+                    return
+
             self.progress.start()
             self.status_label.config(text="Initializing generation...")
             self.root.update()
