@@ -9,7 +9,7 @@ import os
 class PasscodeGenerator:
     def __init__(self, root):
         self.root = root
-        self.root.title("Advanced Passcode Generator")
+        self.root.title("Jeff's Advanced Passcode Generator")
         self.root.geometry("650x800")
         self.root.resizable(True, True)
 
@@ -204,7 +204,7 @@ class PasscodeGenerator:
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
         # Title
-        title_label = ttk.Label(main_frame, text="Advanced Passcode Generator", 
+        title_label = ttk.Label(main_frame, text="Jeff's Advanced Passcode Generator", 
                                font=("Arial", 16, "bold"))
         title_label.grid(row=0, column=0, columnspan=2, pady=(0, 20))
 
