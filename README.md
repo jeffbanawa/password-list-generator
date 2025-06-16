@@ -36,44 +36,6 @@ A comprehensive GUI-based tool for generating custom wordlists and passcode dict
 - **📊 File Status Display**: Shows which data files are loaded and entry counts
 - **💾 Progress Tracking**: Real-time progress updates during generation
 
-## 📋 Requirements
-
-- Python 3.6+
-- tkinter (usually included with Python)
-- No additional dependencies required!
-
-## 🛠️ Installation
-
-1. **Download the files:**
-   ```bash
-   git clone [repository-url]
-   cd passcode-generator
-   ```
-
-2. **Set up data files** (choose one option):
-
-   **Option A: Same Directory**
-   ```
-   passcode_generator.py
-   common_passwords.txt
-   common_patterns.txt
-   common_words.txt
-   ```
-
-   **Option B: Data Subdirectory**
-   ```
-   passcode_generator.py
-   data/
-     ├── common_passwords.txt
-     ├── common_patterns.txt
-     └── common_words.txt
-   ```
-
-3. **Run the application:**
-   ```bash
-   python passcode_generator.py
-   ```
-
 ## 📁 Data Files
 
 ### **common_passwords.txt**
