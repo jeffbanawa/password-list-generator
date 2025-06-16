@@ -9,8 +9,8 @@ import os
 class PasscodeGenerator:
     def __init__(self, root):
         self.root = root
-        self.root.title("Jeff's Advanced Passcode Generator")
-        self.root.geometry("650x800")
+        self.root.title("Advanced Passcode Generator")
+        self.root.geometry("650x900")
         self.root.resizable(True, True)
 
         # Variables
@@ -24,159 +24,14 @@ class PasscodeGenerator:
         self.include_case_variations = tk.BooleanVar(value=True)
         self.num_random = tk.IntVar(value=100)
 
-        # Expanded common passwords (200+ most common)
-        self.common_passwords = [
-            # Top 100 most common passwords
-            "password", "123456", "password123", "admin", "qwerty", "letmein",
-            "welcome", "monkey", "1234567890", "abc123", "111111", "123123",
-            "password1", "1234", "12345", "dragon", "master", "hello",
-            "login", "princess", "solo", "qwerty123", "starwars", "whatever",
-            "trustno1", "batman", "passw0rd", "zaq12wsx", "Password1", "football",
-            "baseball", "welcome123", "ninja", "mustang", "access", "shadow",
-            "jordan", "superman", "test", "guest", "123456789", "000000",
-            "qwertyuiop", "696969", "hottie", "freedom", "aa123456", "qazwsx",
-            "loveme", "fuckyou", "123qwe", "hello123", "lovely", "babygirl",
-            "michael", "ashley", "654321", "jesus", "password12", "computer",
+        # Delimiter options
+        self.delimiter_option = tk.StringVar(value="newline")
+        self.custom_delimiter = tk.StringVar(value="")
 
-            # Additional 100+ common passwords
-            "iloveyou", "charlie", "sunshine", "1q2w3e4r", "princess1", "555555",
-            "lovely1", "7777777", "888888", "123321", "daniel", "qwerty1",
-            "tiger", "1990", "justin", "chocolate", "banana", "joshua",
-            "bubble", "lakers", "playboy", "hunter", "jennifer", "buster",
-            "soccer", "harley", "batman1", "andrew", "tigger", "sunshine1",
-            "password2", "ginger", "charlie1", "orange", "chicken", "rainbow",
-            "jordan23", "liverpool", "blink182", "asdfgh", "winter", "dolphin",
-            "bigdog", "murphy", "banana1", "mickey", "greenday", "chocolate1",
-            "jessica", "pepper", "1111", "summer", "internet", "service",
-            "canada", "hello1", "hunter1", "welcome1", "biteme", "hannah",
-            "hockey", "angels", "maggie", "skittles", "emma", "joshua1",
-            "madison", "guitar", "muffin", "cooper", "cookie", "chocolate2",
-            "icecream", "golfing", "richard", "george", "charles", "money",
-            "tinkerbell", "beautiful", "coolman", "tiger1", "batman2", "rock",
-            "ginger1", "hammer", "summer1", "swimming", "cooper1", "nascar",
-            "redskins", "miller", "shooter", "picture", "united", "cookie1",
-            "lucky", "hotdog", "salasana", "scooter", "blue", "dallas",
-            "cowboys", "eagles", "chicken1", "bear", "smoothie", "apple",
-            "canada1", "sniper", "panther", "tiger123", "fire", "great"
-        ]
-
-        # Expanded patterns (numbers, keyboard patterns, etc.)
-        self.common_patterns = [
-            # Basic number patterns
-            "123", "321", "456", "789", "000", "111", "222", "333", "444", "555",
-            "666", "777", "888", "999", "12", "21", "34", "43", "56", "65",
-            "78", "87", "90", "09", "01", "10", "11", "22", "33", "99",
-
-            # Extended number patterns
-            "1234", "4321", "2468", "1357", "9876", "5678", "8765", "1111",
-            "2222", "3333", "4444", "5555", "6666", "7777", "8888", "9999",
-            "0000", "1212", "2121", "3434", "4343", "5656", "6565", "7878",
-            "8787", "9090", "0909", "1010", "2020", "3030", "4040", "5050",
-
-            # Years and dates
-            "2024", "2023", "2022", "2021", "2020", "2019", "2018", "2017",
-            "2016", "2015", "2014", "2013", "2012", "2011", "2010", "2009",
-            "2008", "2007", "2006", "2005", "2000", "1999", "1998", "1997",
-            "1996", "1995", "1994", "1993", "1992", "1991", "1990", "1989",
-            "1988", "1987", "1986", "1985", "1984", "1983", "1982", "1981",
-            "1980", "1979", "1978", "1977", "1976", "1975", "1970", "1969",
-
-            # Short years
-            "24", "23", "22", "21", "20", "19", "18", "17", "16", "15",
-            "14", "13", "12", "11", "10", "09", "08", "07", "06", "05",
-            "00", "99", "98", "97", "96", "95", "94", "93", "92", "91",
-            "90", "89", "88", "87", "86", "85", "84", "83", "82", "81",
-            "80", "79", "78", "77", "76", "75", "70", "69",
-
-            # Keyboard patterns
-            "qwe", "asd", "zxc", "qaz", "wsx", "edc", "rfv", "tgb", "yhn",
-            "ujm", "ik", "ol", "p", "mnb", "vcx", "dfg", "hjk", "rty",
-            "uio", "sdf", "ghj", "klz", "xcv", "bnm", "poi", "lkj",
-            "qwer", "asdf", "zxcv", "tyui", "ghjk", "bnmq", "wert", "sdfg",
-            "xcvb", "yuio", "hjkl", "vbnm", "erty", "dfgh", "cvbn", "rtyu",
-            "fghj", "vbnm", "tyuio", "ghjkl", "cvbnm", "qwerty", "asdfgh",
-            "zxcvbn", "qwertyui", "asdfghjk", "zxcvbnm"
-        ]
-
-        # Expanded common words (300+ words)
-        self.common_words = [
-            # Emotions and relationships
-            "love", "hate", "happy", "sad", "angry", "joy", "peace", "hope",
-            "dream", "wish", "heart", "soul", "mind", "life", "death",
-            "friend", "family", "mother", "father", "sister", "brother",
-            "wife", "husband", "girlfriend", "boyfriend", "baby", "child",
-
-            # Colors
-            "red", "blue", "green", "yellow", "black", "white", "pink",
-            "purple", "orange", "brown", "gray", "silver", "gold",
-
-            # Animals
-            "dog", "cat", "bird", "fish", "horse", "cow", "pig", "sheep",
-            "lion", "tiger", "bear", "wolf", "fox", "rabbit", "mouse",
-            "elephant", "monkey", "snake", "frog", "turtle", "shark",
-            "eagle", "hawk", "owl", "duck", "chicken", "turkey",
-
-            # Nature
-            "sun", "moon", "star", "sky", "earth", "fire", "water", "wind",
-            "rain", "snow", "ice", "tree", "flower", "grass", "mountain",
-            "ocean", "river", "lake", "beach", "forest", "desert", "island",
-
-            # Food and drinks
-            "pizza", "burger", "cake", "cookie", "bread", "cheese", "milk",
-            "coffee", "tea", "beer", "wine", "water", "juice", "soda",
-            "chocolate", "candy", "sugar", "honey", "apple", "banana",
-            "orange", "grape", "strawberry", "cherry", "lemon", "potato",
-
-            # Technology and internet
-            "computer", "internet", "email", "phone", "mobile", "laptop",
-            "tablet", "website", "google", "facebook", "twitter", "youtube",
-            "instagram", "snapchat", "tiktok", "netflix", "amazon", "apple",
-            "microsoft", "windows", "android", "iphone", "samsung", "wifi",
-
-            # Common objects
-            "house", "home", "car", "bike", "boat", "plane", "train", "bus",
-            "door", "window", "table", "chair", "bed", "book", "pen", "paper",
-            "money", "dollar", "euro", "pound", "gold", "silver", "diamond",
-            "key", "lock", "safe", "box", "bag", "shoe", "hat", "shirt",
-
-            # Sports and games
-            "football", "soccer", "basketball", "baseball", "tennis", "golf",
-            "hockey", "swimming", "running", "boxing", "wrestling", "racing",
-            "game", "play", "win", "lose", "team", "player", "coach", "ball",
-            "goal", "score", "match", "tournament", "champion", "victory",
-
-            # Work and education
-            "work", "job", "office", "boss", "employee", "manager", "teacher",
-            "student", "school", "college", "university", "class", "test",
-            "exam", "grade", "homework", "study", "learn", "knowledge",
-            "skill", "talent", "career", "business", "company", "meeting",
-
-            # Time and dates
-            "time", "day", "night", "morning", "evening", "today", "tomorrow",
-            "yesterday", "week", "month", "year", "hour", "minute", "second",
-            "monday", "tuesday", "wednesday", "thursday", "friday", "saturday",
-            "sunday", "january", "february", "march", "april", "may", "june",
-            "july", "august", "september", "october", "november", "december",
-
-            # Places and locations
-            "america", "usa", "canada", "mexico", "england", "france", "germany",
-            "italy", "spain", "russia", "china", "japan", "india", "australia",
-            "brazil", "argentina", "egypt", "africa", "europe", "asia",
-            "city", "town", "village", "country", "state", "street", "road",
-            "park", "store", "shop", "mall", "restaurant", "hotel", "airport",
-
-            # Abstract concepts
-            "god", "heaven", "hell", "angel", "devil", "good", "evil", "right",
-            "wrong", "true", "false", "yes", "no", "maybe", "always", "never",
-            "forever", "eternity", "infinity", "zero", "one", "first", "last",
-            "best", "worst", "big", "small", "hot", "cold", "fast", "slow",
-
-            # Common adjectives
-            "beautiful", "ugly", "smart", "stupid", "strong", "weak", "rich",
-            "poor", "young", "old", "new", "ancient", "modern", "classic",
-            "special", "normal", "weird", "strange", "funny", "serious",
-            "cool", "hot", "warm", "cold", "fresh", "stale", "clean", "dirty"
-        ]
+        # Load data from files
+        self.common_passwords = self.load_data_file("common_passwords.txt")
+        self.common_patterns = self.load_data_file("common_patterns.txt")
+        self.common_words = self.load_data_file("common_words.txt")
 
         # Special characters and symbols
         self.special_chars = [
@@ -186,6 +41,82 @@ class PasscodeGenerator:
         ]
 
         self.setup_ui()
+
+    def load_data_file(self, filename):
+        """Load data from a text file, return list of lines"""
+        try:
+            # Try to load from same directory as script
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            file_path = os.path.join(script_dir, filename)
+
+            if not os.path.exists(file_path):
+                # Try current working directory
+                file_path = filename
+
+            if not os.path.exists(file_path):
+                # Try data subdirectory
+                data_dir = os.path.join(script_dir, "data")
+                file_path = os.path.join(data_dir, filename)
+
+            if os.path.exists(file_path):
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    # Read lines, strip whitespace, and filter out empty lines
+                    lines = [line.strip() for line in f.readlines()]
+                    return [line for line in lines if line and not line.startswith('#')]
+            else:
+                # Return fallback data if file not found
+                return self.get_fallback_data(filename)
+
+        except Exception as e:
+            print(f"Warning: Could not load {filename}: {e}")
+            return self.get_fallback_data(filename)
+
+    def get_fallback_data(self, filename):
+        """Return minimal fallback data if files can't be loaded"""
+        if filename == "common_passwords.txt":
+            return [
+                "password", "123456", "password123", "admin", "qwerty", "letmein",
+                "welcome", "monkey", "abc123", "111111", "123123", "password1",
+                "1234", "12345", "dragon", "master", "hello", "login", "princess"
+            ]
+        elif filename == "common_patterns.txt":
+            return [
+                "123", "321", "456", "789", "000", "111", "222", "333", "444", "555",
+                "1234", "4321", "2468", "1357", "qwerty", "asdf", "zxcv", "2024", "2023"
+            ]
+        elif filename == "common_words.txt":
+            return [
+                "love", "hate", "happy", "sad", "red", "blue", "green", "black", "white",
+                "dog", "cat", "bird", "fish", "sun", "moon", "star", "home", "work"
+            ]
+        return []
+
+    def check_data_files(self):
+        """Check if all data files are present and show status"""
+        files_status = []
+        required_files = ["common_passwords.txt", "common_patterns.txt", "common_words.txt"]
+
+        for filename in required_files:
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            file_path = os.path.join(script_dir, filename)
+
+            if not os.path.exists(file_path):
+                file_path = filename
+            if not os.path.exists(file_path):
+                data_dir = os.path.join(script_dir, "data")
+                file_path = os.path.join(data_dir, filename)
+
+            if os.path.exists(file_path):
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        lines = len([line for line in f.readlines() if line.strip() and not line.strip().startswith('#')])
+                    files_status.append(f"✅ {filename}: {lines} entries loaded")
+                except:
+                    files_status.append(f"⚠️ {filename}: Found but error reading")
+            else:
+                files_status.append(f"❌ {filename}: Not found (using fallback data)")
+
+        return files_status
 
     def setup_ui(self):
         # Main frame with scrollbar
@@ -205,13 +136,22 @@ class PasscodeGenerator:
         main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
 
         # Title
-        title_label = ttk.Label(main_frame, text="Jeff's Advanced Passcode Generator", 
+        title_label = ttk.Label(main_frame, text="Advanced Passcode Generator", 
                                font=("Arial", 16, "bold"))
-        title_label.grid(row=0, column=0, columnspan=2, pady=(0, 20))
+        title_label.grid(row=0, column=0, columnspan=2, pady=(0, 10))
+
+        # Data files status
+        status_frame = ttk.LabelFrame(main_frame, text="Data Files Status", padding="10")
+        status_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+
+        files_status = self.check_data_files()
+        for i, status in enumerate(files_status):
+            status_label = ttk.Label(status_frame, text=status, font=("Arial", 8))
+            status_label.grid(row=i, column=0, sticky=tk.W)
 
         # Length settings
         length_frame = ttk.LabelFrame(main_frame, text="Passcode Length", padding="10")
-        length_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        length_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         ttk.Label(length_frame, text="Minimum Length:").grid(row=0, column=0, sticky=tk.W)
         min_spin = ttk.Spinbox(length_frame, from_=1, to=50, width=10, 
@@ -223,9 +163,51 @@ class PasscodeGenerator:
                               textvariable=self.max_length)
         max_spin.grid(row=1, column=1, padx=(10, 0), pady=(5, 0))
 
+        # Delimiter settings
+        delimiter_frame = ttk.LabelFrame(main_frame, text="Output Format", padding="10")
+        delimiter_frame.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+
+        ttk.Label(delimiter_frame, text="Delimiter between passcodes:").grid(row=0, column=0, sticky=tk.W, columnspan=3)
+
+        # Delimiter radio buttons
+        ttk.Radiobutton(delimiter_frame, text="New Line (\\n)", variable=self.delimiter_option, 
+                       value="newline").grid(row=1, column=0, sticky=tk.W, padx=(20, 0))
+        ttk.Radiobutton(delimiter_frame, text="Comma (,)", variable=self.delimiter_option, 
+                       value="comma").grid(row=1, column=1, sticky=tk.W, padx=(20, 0))
+        ttk.Radiobutton(delimiter_frame, text="Semicolon (;)", variable=self.delimiter_option, 
+                       value="semicolon").grid(row=1, column=2, sticky=tk.W, padx=(20, 0))
+
+        ttk.Radiobutton(delimiter_frame, text="Tab (\\t)", variable=self.delimiter_option, 
+                       value="tab").grid(row=2, column=0, sticky=tk.W, padx=(20, 0))
+        ttk.Radiobutton(delimiter_frame, text="Space", variable=self.delimiter_option, 
+                       value="space").grid(row=2, column=1, sticky=tk.W, padx=(20, 0))
+        ttk.Radiobutton(delimiter_frame, text="Pipe (|)", variable=self.delimiter_option, 
+                       value="pipe").grid(row=2, column=2, sticky=tk.W, padx=(20, 0))
+
+        # Custom delimiter option
+        custom_frame = ttk.Frame(delimiter_frame)
+        custom_frame.grid(row=3, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(10, 0))
+
+        ttk.Radiobutton(custom_frame, text="Custom:", variable=self.delimiter_option, 
+                       value="custom").grid(row=0, column=0, sticky=tk.W)
+
+        self.custom_entry = ttk.Entry(custom_frame, textvariable=self.custom_delimiter, width=15)
+        self.custom_entry.grid(row=0, column=1, padx=(10, 0))
+
+        # Bind custom entry to select custom radio button
+        def on_custom_entry_focus(event):
+            self.delimiter_option.set("custom")
+        self.custom_entry.bind("<FocusIn>", on_custom_entry_focus)
+        self.custom_entry.bind("<KeyPress>", on_custom_entry_focus)
+
+        delimiter_info = ttk.Label(delimiter_frame, 
+                                  text="💡 Tip: Use \\n for new lines, \\t for tabs, or any custom character(s)", 
+                                  font=("Arial", 8), foreground="gray", wraplength=500)
+        delimiter_info.grid(row=4, column=0, columnspan=3, sticky=tk.W, pady=(5, 0))
+
         # Case variation settings
         case_frame = ttk.LabelFrame(main_frame, text="Case Variations", padding="10")
-        case_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        case_frame.grid(row=4, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         ttk.Checkbutton(case_frame, text="Generate ALL possible upper/lowercase combinations for words", 
                        variable=self.include_case_variations).grid(row=0, column=0, columnspan=2, sticky=tk.W)
@@ -236,9 +218,9 @@ class PasscodeGenerator:
 
         # Common passwords
         common_frame = ttk.LabelFrame(main_frame, text="Common Passwords & Patterns", padding="10")
-        common_frame.grid(row=3, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        common_frame.grid(row=5, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
-        ttk.Checkbutton(common_frame, text="Include 200+ most common passwords and patterns", 
+        ttk.Checkbutton(common_frame, text=f"Include {len(self.common_passwords)} common passwords and {len(self.common_patterns)} patterns", 
                        variable=self.include_common).grid(row=0, column=0, columnspan=2, sticky=tk.W)
 
         info_label = ttk.Label(common_frame, text="Includes: passwords, keyboard patterns, years, number sequences, etc.", 
@@ -247,18 +229,18 @@ class PasscodeGenerator:
 
         # Smart combinations
         combo_frame = ttk.LabelFrame(main_frame, text="Smart Combinations", padding="10")
-        combo_frame.grid(row=4, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        combo_frame.grid(row=6, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         ttk.Checkbutton(combo_frame, text="Create intelligent combinations of common passwords + your data", 
                        variable=self.include_combinations).grid(row=0, column=0, columnspan=2, sticky=tk.W)
 
-        combo_info = ttk.Label(combo_frame, text="Combines 200+ common passwords with your dates/words + 300+ common words", 
+        combo_info = ttk.Label(combo_frame, text=f"Combines {len(self.common_passwords)} common passwords with your dates/words + {len(self.common_words)} common words", 
                               font=("Arial", 8), foreground="gray", wraplength=500)
         combo_info.grid(row=1, column=0, columnspan=2, sticky=tk.W, pady=(5, 0))
 
         # Important dates
         dates_frame = ttk.LabelFrame(main_frame, text="Important Dates", padding="10")
-        dates_frame.grid(row=5, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        dates_frame.grid(row=7, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         ttk.Checkbutton(dates_frame, text="Include date-based passcodes", 
                        variable=self.include_dates).grid(row=0, column=0, columnspan=2, sticky=tk.W)
@@ -275,7 +257,7 @@ class PasscodeGenerator:
 
         # Important words
         words_frame = ttk.LabelFrame(main_frame, text="Important Words/Names", padding="10")
-        words_frame.grid(row=6, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        words_frame.grid(row=8, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         ttk.Checkbutton(words_frame, text="Include word-based passcodes", 
                        variable=self.include_words).grid(row=0, column=0, columnspan=2, sticky=tk.W)
@@ -292,7 +274,7 @@ class PasscodeGenerator:
 
         # Random passcodes
         random_frame = ttk.LabelFrame(main_frame, text="Random Passcodes", padding="10")
-        random_frame.grid(row=7, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        random_frame.grid(row=9, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         ttk.Checkbutton(random_frame, text="Include random alphanumeric passcodes", 
                        variable=self.include_random).grid(row=0, column=0, columnspan=2, sticky=tk.W)
@@ -304,7 +286,7 @@ class PasscodeGenerator:
 
         # File size warning
         warning_frame = ttk.LabelFrame(main_frame, text="File Size Management", padding="10")
-        warning_frame.grid(row=8, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        warning_frame.grid(row=10, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         warning_text = ttk.Label(warning_frame, 
                                 text="⚠️ Large wordlists will be automatically split into 1GB files\n" +
@@ -315,15 +297,15 @@ class PasscodeGenerator:
         # Generate button
         generate_btn = ttk.Button(main_frame, text="Generate Passcodes", 
                                  command=self.generate_passcodes, style="Accent.TButton")
-        generate_btn.grid(row=9, column=0, columnspan=2, pady=20)
+        generate_btn.grid(row=11, column=0, columnspan=2, pady=20)
 
         # Progress bar
         self.progress = ttk.Progressbar(main_frame, mode='indeterminate')
-        self.progress.grid(row=10, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+        self.progress.grid(row=12, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
 
         # Status label
         self.status_label = ttk.Label(main_frame, text="Ready to generate passcodes")
-        self.status_label.grid(row=11, column=0, columnspan=2)
+        self.status_label.grid(row=13, column=0, columnspan=2)
 
         # Configure scrolling
         canvas.pack(side="left", fill="both", expand=True)
@@ -338,6 +320,43 @@ class PasscodeGenerator:
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         main_frame.columnconfigure(0, weight=1)
+
+    def get_delimiter(self):
+        """Get the selected delimiter character(s)"""
+        option = self.delimiter_option.get()
+
+        if option == "newline":
+            return "\n"
+        elif option == "comma":
+            return ","
+        elif option == "semicolon":
+            return ";"
+        elif option == "tab":
+            return "\t"
+        elif option == "space":
+            return " "
+        elif option == "pipe":
+            return "|"
+        elif option == "custom":
+            custom = self.custom_delimiter.get()
+            # Handle escape sequences
+            custom = custom.replace("\\n", "\n")
+            custom = custom.replace("\\t", "\t")
+            custom = custom.replace("\\r", "\r")
+            return custom if custom else "\n"  # Default to newline if empty
+        else:
+            return "\n"  # Default fallback
+
+    def get_file_extension(self):
+        """Get appropriate file extension based on delimiter"""
+        option = self.delimiter_option.get()
+
+        if option == "comma":
+            return ".csv"
+        elif option == "tab":
+            return ".tsv"
+        else:
+            return ".txt"
 
     def generate_all_case_variations(self, word):
         """Generate ALL possible upper/lowercase combinations for a word"""
@@ -739,19 +758,25 @@ class PasscodeGenerator:
         current_size = 0
         current_file = None
         files_created = []
+        delimiter = self.get_delimiter()
 
         try:
             # Create first file
             if len(passcodes) > 1000000:  # If more than 1M passcodes, expect multiple files
-                filename = f"{base_filename}_part{file_count}.txt"
+                filename = f"{base_filename}_part{file_count}{self.get_file_extension()}"
             else:
-                filename = f"{base_filename}.txt"
+                filename = f"{base_filename}{self.get_file_extension()}"
 
             current_file = open(filename, 'w', encoding='utf-8')
             files_created.append(filename)
 
             for i, passcode in enumerate(passcodes):
-                line = passcode + '\n'
+                # Use delimiter instead of always newline
+                if i == len(passcodes) - 1:  # Last item
+                    line = passcode  # No delimiter after last item
+                else:
+                    line = passcode + delimiter
+
                 line_size = len(line.encode('utf-8'))
 
                 # Check if adding this line would exceed 1GB
@@ -759,7 +784,7 @@ class PasscodeGenerator:
                     # Close current file and start new one
                     current_file.close()
                     file_count += 1
-                    filename = f"{base_filename}_part{file_count}.txt"
+                    filename = f"{base_filename}_part{file_count}{self.get_file_extension()}"
                     current_file = open(filename, 'w', encoding='utf-8')
                     files_created.append(filename)
                     current_size = 0
@@ -856,87 +881,76 @@ class PasscodeGenerator:
             if self.include_combinations.get():
                 self.status_label.config(text="Generating smart combinations...")
                 self.root.update()
-                user_words = self.words_text.get("1.0", tk.END)
-                user_dates = self.dates_text.get("1.0", tk.END)
-                if user_words.strip() or user_dates.strip():
-                    smart_combinations = self.generate_smart_combinations(user_words, user_dates)
-                    filtered_smart = self.filter_by_length(smart_combinations, min_len, max_len)
-                    all_passcodes.extend(filtered_smart)
-                    self.status_label.config(text=f"Generated {len(filtered_smart):,} smart combinations")
-                    self.root.update()
+                words_text = self.words_text.get("1.0", tk.END)
+                dates_text = self.dates_text.get("1.0", tk.END)
+                smart_combinations = self.generate_smart_combinations(words_text, dates_text)
+                filtered_smart = self.filter_by_length(smart_combinations, min_len, max_len)
+                all_passcodes.extend(filtered_smart)
+                self.status_label.config(text=f"Generated {len(filtered_smart):,} smart combinations")
+                self.root.update()
 
             # Generate random passcodes
             if self.include_random.get():
                 self.status_label.config(text="Generating random passcodes...")
                 self.root.update()
-                random_passcodes = self.generate_random_passcodes(
-                    self.num_random.get(), min_len, max_len)
+                random_passcodes = self.generate_random_passcodes(self.num_random.get(), min_len, max_len)
                 all_passcodes.extend(random_passcodes)
-                self.status_label.config(text=f"Generated {self.num_random.get():,} random passcodes")
+                self.status_label.config(text=f"Generated {len(random_passcodes):,} random passcodes")
                 self.root.update()
 
-            self.status_label.config(text="Removing duplicates...")
-            self.root.update()
-
-            # Remove duplicates while preserving order
-            unique_passcodes = []
-            seen = set()
-            for i, passcode in enumerate(all_passcodes):
-                if passcode not in seen:
-                    unique_passcodes.append(passcode)
-                    seen.add(passcode)
-
-                # Update progress every 50000 items
-                if i % 50000 == 0:
-                    self.status_label.config(text=f"Removing duplicates... {i:,}/{len(all_passcodes):,}")
-                    self.root.update()
-
-            if not unique_passcodes:
-                messagebox.showwarning("Warning", "No passcodes generated! Please check your settings.")
+            if not all_passcodes:
+                messagebox.showwarning("Warning", "No passcodes generated! Please select at least one generation method.")
                 return
 
-            # Estimate file size
-            estimated_size = sum(len(p.encode('utf-8')) + 1 for p in unique_passcodes)  # +1 for newline
-            estimated_size_mb = estimated_size / (1024 * 1024)
+            # Remove duplicates
+            self.status_label.config(text="Removing duplicates...")
+            self.root.update()
+            unique_passcodes = list(set(all_passcodes))
 
-            self.status_label.config(text=f"Estimated file size: {estimated_size_mb:.1f} MB")
+            self.status_label.config(text=f"Generated {len(unique_passcodes):,} unique passcodes")
             self.root.update()
 
-            # Get base filename
-            base_filename = filedialog.asksaveasfilename(
-                defaultextension=".txt",
-                filetypes=[("Text files", "*.txt"), ("All files", "*.*")],
-                title="Save Passcodes As"
+            # Ask for save location
+            file_path = filedialog.asksaveasfilename(
+                defaultextension=self.get_file_extension(),
+                filetypes=[
+                    ("Text files", "*.txt"),
+                    ("CSV files", "*.csv"),
+                    ("TSV files", "*.tsv"),
+                    ("All files", "*.*")
+                ],
+                title="Save Passcode List"
             )
 
-            if base_filename:
-                # Remove .txt extension if present for splitting logic
-                if base_filename.endswith('.txt'):
-                    base_filename = base_filename[:-4]
+            if not file_path:
+                return
 
-                self.status_label.config(text="Saving passcodes to file(s)...")
-                self.root.update()
+            # Remove extension from file_path for base filename
+            base_filename = os.path.splitext(file_path)[0]
 
-                files_created = self.save_passcodes_with_splitting(unique_passcodes, base_filename)
+            # Save passcodes with splitting
+            self.status_label.config(text="Saving passcodes...")
+            self.root.update()
 
-                # Show success message
-                if len(files_created) == 1:
-                    message = f"Generated {len(unique_passcodes):,} unique passcodes!\nSaved to: {files_created[0]}"
-                else:
-                    message = f"Generated {len(unique_passcodes):,} unique passcodes!\nSplit into {len(files_created)} files:\n"
-                    for file in files_created:
-                        file_size = os.path.getsize(file) / (1024 * 1024)
-                        message += f"• {os.path.basename(file)} ({file_size:.1f} MB)\n"
+            files_created = self.save_passcodes_with_splitting(unique_passcodes, base_filename)
 
-                self.status_label.config(text=f"Successfully saved {len(unique_passcodes):,} passcodes to {len(files_created)} file(s)")
-                messagebox.showinfo("Success", message)
+            self.progress.stop()
+
+            # Show completion message
+            if len(files_created) == 1:
+                message = f"Successfully generated {len(unique_passcodes):,} passcodes!\n\nSaved to: {files_created[0]}"
+            else:
+                message = f"Successfully generated {len(unique_passcodes):,} passcodes!\n\nSaved to {len(files_created)} files:\n"
+                for file in files_created:
+                    message += f"• {os.path.basename(file)}\n"
+
+            messagebox.showinfo("Success", message)
+            self.status_label.config(text=f"Completed! Generated {len(unique_passcodes):,} unique passcodes")
 
         except Exception as e:
+            self.progress.stop()
             messagebox.showerror("Error", f"An error occurred: {str(e)}")
             self.status_label.config(text="Error occurred during generation")
-
-        finally:
-            self.progress.stop()
 
 def main():
     root = tk.Tk()
