@@ -13,6 +13,7 @@ from generators.date_generator import DateGenerator
 from generators.word_generator import WordGenerator
 from generators.random_generator import RandomGenerator
 from generators.smart_generator import SmartGenerator
+from utils.password_filter import PasswordFilter
 
 class PasscodeGeneratorGUI:
     def __init__(self, root):
@@ -20,10 +21,13 @@ class PasscodeGeneratorGUI:
         self.root.title("Advanced Passcode Generator")
         self.root.geometry("650x900")
         self.root.resizable(True, True)
+        self.exclude_previous = tk.BooleanVar(value=False)
+        self.previous_file_path = tk.StringVar(value="")
 
         # Initialize components
         self.data_loader = DataLoader()
         self.file_manager = FileManager()
+        self.password_filter = PasswordFilter()
 
         # Variables
         self.min_length = tk.IntVar(value=6)
@@ -74,21 +78,24 @@ class PasscodeGeneratorGUI:
         # Delimiter settings
         self._setup_delimiter_frame(main_frame, 3)
 
+        # Previous passwords exclusion - NEW
+        self._setup_previous_passwords_frame(main_frame, 4)
+
         # Case variation settings
-        self._setup_case_frame(main_frame, 4)
+        self._setup_case_frame(main_frame, 5)
 
         # Generation method frames
-        self._setup_common_frame(main_frame, 5)
-        self._setup_combinations_frame(main_frame, 6)
-        self._setup_dates_frame(main_frame, 7)
-        self._setup_words_frame(main_frame, 8)
-        self._setup_random_frame(main_frame, 9)
+        self._setup_common_frame(main_frame, 6)
+        self._setup_combinations_frame(main_frame, 7)
+        self._setup_dates_frame(main_frame, 8)
+        self._setup_words_frame(main_frame, 9)
+        self._setup_random_frame(main_frame, 10)
 
         # Warning frame
-        self._setup_warning_frame(main_frame, 10)
+        self._setup_warning_frame(main_frame, 11)
 
         # Generate button and progress
-        self._setup_controls_frame(main_frame, 11)
+        self._setup_controls_frame(main_frame, 12)
 
         # Configure scrolling
         canvas.pack(side="left", fill="both", expand=True)
@@ -171,6 +178,73 @@ class PasscodeGeneratorGUI:
                                   text="💡 Tip: Use \\n for new lines, \\t for tabs, or any custom character(s)", 
                                   font=("Arial", 8), foreground="gray", wraplength=500)
         delimiter_info.grid(row=4, column=0, columnspan=3, sticky=tk.W, pady=(5, 0))
+
+    def _setup_previous_passwords_frame(self, parent, row):
+        """Set up previous passwords exclusion frame"""
+        previous_frame = ttk.LabelFrame(parent, text="Previous Passwords Exclusion", padding="10")
+        previous_frame.grid(row=row, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+
+        ttk.Checkbutton(previous_frame, text="Exclude passwords from previous file", 
+                    variable=self.exclude_previous).grid(row=0, column=0, columnspan=3, sticky=tk.W)
+
+        # File selection frame
+        file_frame = ttk.Frame(previous_frame)
+        file_frame.grid(row=1, column=0, columnspan=3, sticky=(tk.W, tk.E), pady=(10, 0))
+        file_frame.columnconfigure(1, weight=1)
+
+        ttk.Label(file_frame, text="Previous file:").grid(row=0, column=0, sticky=tk.W)
+
+        self.previous_file_entry = ttk.Entry(file_frame, textvariable=self.previous_file_path, 
+                                            state="readonly", width=40)
+        self.previous_file_entry.grid(row=0, column=1, sticky=(tk.W, tk.E), padx=(10, 5))
+
+        browse_btn = ttk.Button(file_frame, text="Browse...", command=self._browse_previous_file)
+        browse_btn.grid(row=0, column=2, sticky=tk.W)
+
+        clear_btn = ttk.Button(file_frame, text="Clear", command=self._clear_previous_file)
+        clear_btn.grid(row=0, column=3, sticky=tk.W, padx=(5, 0))
+
+        # Info label
+        info_label = ttk.Label(previous_frame, 
+                            text="💡 Supports .txt, .csv, .tsv files. Automatically detects delimiters and removes matching passwords.", 
+                            font=("Arial", 8), foreground="gray", wraplength=500)
+        info_label.grid(row=2, column=0, columnspan=3, sticky=tk.W, pady=(5, 0))
+
+        # Bind checkbox to enable/disable file selection
+        def on_checkbox_change():
+            if self.exclude_previous.get():
+                self.previous_file_entry.config(state="readonly")
+                browse_btn.config(state="normal")
+                clear_btn.config(state="normal")
+            else:
+                self.previous_file_entry.config(state="disabled")
+                browse_btn.config(state="disabled")
+                clear_btn.config(state="disabled")
+
+        self.exclude_previous.trace_add("write", lambda *args: on_checkbox_change())
+        on_checkbox_change()  # Set initial state
+
+    def _browse_previous_file(self):
+        """Browse for previous password file"""
+        file_path = filedialog.askopenfilename(
+            title="Select Previous Password File",
+            filetypes=[
+                ("Text files", "*.txt"),
+                ("CSV files", "*.csv"),
+                ("TSV files", "*.tsv"),
+                ("All files", "*.*")
+            ]
+        )
+
+        if file_path:
+            self.previous_file_path.set(file_path)
+            # Automatically enable the checkbox when file is selected
+            self.exclude_previous.set(True)
+
+    def _clear_previous_file(self):
+        """Clear the previous file selection"""
+        self.previous_file_path.set("")
+        self.exclude_previous.set(False)
 
     def _setup_case_frame(self, parent, row):
         """Set up case variation settings frame"""
@@ -329,7 +403,7 @@ class PasscodeGeneratorGUI:
     def generate_passcodes(self):
         """Main function to generate all passcodes"""
         try:
-            # Warning for case variations
+            ## Warning for case variations
             if self.include_case_variations.get():
                 result = messagebox.askyesno("Warning", 
                     "⚠️ You have enabled ALL case variations!\n\n" +
@@ -344,6 +418,16 @@ class PasscodeGeneratorGUI:
             self.progress.start()
             self.status_label.config(text="Initializing generation...")
             self.root.update()
+
+            # Load previous passwords if exclusion is enabled
+            previous_passwords = set()
+            if self.exclude_previous.get() and self.previous_file_path.get():
+                self.password_filter.set_status_callback(lambda msg: self._update_status(msg))
+                previous_passwords = self.password_filter.load_previous_passwords(self.previous_file_path.get())
+
+                if previous_passwords:
+                    self.status_label.config(text=f"Loaded {len(previous_passwords):,} previous passwords for exclusion")
+                    self.root.update()
 
             all_passcodes = []
             min_len = self.min_length.get()
@@ -437,8 +521,16 @@ class PasscodeGeneratorGUI:
             self.root.update()
             unique_passcodes = list(set(all_passcodes))
 
+            # Filter out previous passwords if enabled
+            if previous_passwords:
+                unique_passcodes = self.password_filter.filter_passwords(unique_passcodes, previous_passwords)
+
             self.status_label.config(text=f"Generated {len(unique_passcodes):,} unique passcodes")
             self.root.update()
+
+            if not unique_passcodes:
+                messagebox.showwarning("Warning", "No new passcodes generated! All passwords were duplicates of previous file.")
+                return
 
             # Ask for save location
             file_path = filedialog.asksaveasfilename(
@@ -489,3 +581,43 @@ class PasscodeGeneratorGUI:
         """Update status label and refresh UI"""
         self.status_label.config(text=message)
         self.root.update()
+
+    def _browse_previous_file(self):
+        """Browse for previous password file"""
+        file_path = filedialog.askopenfilename(
+            title="Select Previous Password File",
+            filetypes=[
+                ("Text files", "*.txt"),
+                ("CSV files", "*.csv"),
+                ("TSV files", "*.tsv"),
+                ("All files", "*.*")
+            ]
+        )
+
+        if file_path:
+            self.previous_file_path.set(file_path)
+            # Automatically enable the checkbox when file is selected
+            self.exclude_previous.set(True)
+
+            # Show file statistics
+            stats = self.password_filter.get_file_stats(file_path)
+            if stats:
+                file_size_mb = stats['file_size'] / (1024 * 1024)
+                messagebox.showinfo("File Statistics", 
+                    f"File: {stats['file_name']}\n"
+                    f"Size: {file_size_mb:.2f} MB\n"
+                    f"Estimated passwords: {stats['password_count']:,}\n\n"
+                    f"These passwords will be excluded from new results.")
+                
+    def _setup_warning_frame(self, parent, row):
+        """Set up warning frame"""
+        warning_frame = ttk.LabelFrame(parent, text="File Size Management", padding="10")
+        warning_frame.grid(row=row, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
+
+        warning_text = ttk.Label(warning_frame, 
+                                text="⚠️ Large wordlists will be automatically split into 1GB files\n" +
+                                    "🚨 With case variations enabled, expect TENS OF MILLIONS of passcodes!\n" +
+                                    "💡 Previous password exclusion helps avoid generating duplicate wordlists", 
+                                font=("Arial", 9), foreground="red", wraplength=500)
+        warning_text.grid(row=0, column=0, columnspan=2, sticky=tk.W)
+
